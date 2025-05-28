@@ -1,0 +1,1 @@
+const logger = console.log("logger 가져오기");

@@ -1,0 +1,1 @@
+const log = console.log("log 가져오기");

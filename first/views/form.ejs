@@ -1,0 +1,51 @@
+<head>
+  <title>GetPost</title>
+</head>
+
+<body>
+
+  <h1><%= title %></h1>
+
+  <h2>GET</h2>
+  <%- include("./getForm") %>
+
+  <h2>POST</h2>
+  <form action="/postForm" method="post">
+    <label>이름</label>
+    <input type="text" name="name"><br>
+
+    <label>성별</label>
+    <input type="radio" name="gender" value="남자">남자
+    <input type="radio" name="gender" value="여자">여자<br>
+
+    <label>생년월일</label>
+    <select name="year" id="year">
+      <option value="">년도 선택</option>
+      <% for (let y = 2025; y > 2000; y--) { %>
+      <option value="<%= y %>년"><%= y %></option>
+      <% } %>
+      <!-- 어떤 값을 출력할떄는 = 사용 -->
+    </select>
+    <select id="month" name="month">
+      <option value="">월 선택</option>
+      <% for (let m = 1; m <= 12; m++) { %>
+      <option value="<%= m %>월"><%= m %>월</option>
+      <% } %>
+    </select>
+    <select id="day" name="day">
+      <option value="">일 선택</option>
+      <% for (let d = 1; d <= 31; d++) { %>
+      <option value="<%= d %>일"><%= d %>일</option>
+      <% } %>
+    </select><br>
+
+    <label>관심사</label>
+    <input type="checkbox" value="여행" name="interest">여행
+    <input type="checkbox" value="패션" name="interest">패션
+    <input type="checkbox" value="음식" name="interest">음식<br>
+
+    <label>좋아하는 숫자</label>
+    <input type="number" name="nb">
+    <button type="submit">회원가입</button>
+  </form>
+</body>
