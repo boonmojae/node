@@ -1,6 +1,7 @@
 const express = require("express");
 
 const aRouter = require('./a');//./a.js
+const uRouter = require('./users');
 const app = express();
 
 const port = 3000;
@@ -16,9 +17,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use("/a", aRouter);// /a가 오면 aRouter로 보내라 => a.js에 있는 router가 잠아줌
+app.use("/users", uRouter);
 
-
-const users = [1, 2, 3, 4, 5];
 const posts = [
   {
     "id": 1,
@@ -37,59 +37,59 @@ const posts = [
 ];
 
 
-app.get("/users", (req, res) => {
-  const tempRes = [];
-  users.forEach((element) => {
-    tempRes.push({ id: element });
-  });
-  res.send(tempRes);
-});
+// app.get("/users", (req, res) => {
+//   const tempRes = [];
+//   users.forEach((element) => {
+//     tempRes.push({ id: element });
+//   });
+//   res.send(tempRes);
+// });
 
 
-app.post("/users", (req, res) => {
-  console.log("요청 body:", req.body);
-  const { id } = req.body;
-  const numId = Number(id);
-  const userExists = users.includes(numId);
+// app.post("/users", (req, res) => {
+//   console.log("요청 body:", req.body);
+//   const { id } = req.body;
+//   const numId = Number(id);
+//   const userExists = users.includes(numId);
 
-  if (userExists) {
-    return res.send({ error: "이미 존재하는 사용자입니다." });
-  }
+//   if (userExists) {
+//     return res.send({ error: "이미 존재하는 사용자입니다." });
+//   }
 
-  users.push(numId);
-  res.send({ message: "사용자가 추가되었습니다", id: numId });
-});
-
-
-app.get("/users/:id", (req, res) => {
-  const { id } = req.params;
-  const numId = Number(id);
-  const userExists = users.includes(numId);
-
-  if (userExists) {
-    return res.send({ id });
-  }
-  res.send({ error: "해당 사용자를 찾을 수 없습니다." });
-});
+//   users.push(numId);
+//   res.send({ message: "사용자가 추가되었습니다", id: numId });
+// });
 
 
-app.delete("/users/:id", (req, res) => {
-  console.log("삭제 param:", req.params);
-  const { id } = req.params;
-  const numId = Number(id);
-  const userIndex = users.indexOf(numId);
+// app.get("/users/:id", (req, res) => {
+//   const { id } = req.params;
+//   const numId = Number(id);
+//   const userExists = users.includes(numId);
 
-  if (userIndex !== -1) {
-    users.splice(userIndex, 1);
-    return res.send({
-      message: "사용자가 삭제되었습니다."
-    });
-  }
+//   if (userExists) {
+//     return res.send({ id });
+//   }
+//   res.send({ error: "해당 사용자를 찾을 수 없습니다." });
+// });
 
-  res.send({
-    error: "해당 사용자를 찾을 수 없습니다."
-  });
-});
+
+// app.delete("/users/:id", (req, res) => {
+//   console.log("삭제 param:", req.params);
+//   const { id } = req.params;
+//   const numId = Number(id);
+//   const userIndex = users.indexOf(numId);
+
+//   if (userIndex !== -1) {
+//     users.splice(userIndex, 1);
+//     return res.send({
+//       message: "사용자가 삭제되었습니다."
+//     });
+//   }
+
+//   res.send({
+//     error: "해당 사용자를 찾을 수 없습니다."
+//   });
+// });
 
 
 
