@@ -18,86 +18,157 @@ app.use(express.json());
 app.use("/a", aRouter);// /a가 오면 aRouter로 보내라 => a.js에 있는 router가 잠아줌
 
 
-app.get("/api/goods", (req, res) => {
+const users = [1, 2, 3, 4, 5];
+const posts = [
+  {
+    "id": 1,
+    "userId": 2,
+    "title": "첫 번째 글",
+    "content": "안녕하세요 게시판입니다.",
+    "createdAt": "2025-05-29T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "userId": 2,
+    "title": "두 번째 글",
+    "content": "안녕하세요 게시판2입니다.",
+    "createdAt": "2025-05-29T10:00:00Z"
+  }
+];
+
+
+app.get("/users", (req, res) => {
+  res.send(users);
+});
+
+
+app.post("/users", (req, res) => {
+  console.log("요청 body:", req.body);
+  const { id } = req.body;
+  const numId = Number(id);
+  const userExists = users.includes(numId);
+
+  if (userExists) {
+    return res.send({ error: "이미 존재하는 사용자입니다." });
+  }
+
+  users.push(numId);
+  res.send({ message: "사용자가 추가되었습니다", id: numId });
+});
+
+
+app.get("/users/:id", (req, res) => {
+  const { id } = req.params;
+  const numId = Number(id);
+  const userExists = users.includes(numId);
+
+  if (userExists) {
+    return res.send({ id });
+  }
+  res.send({ error: "해당 사용자를 찾을 수 없습니다." });
+});
+
+
+app.delete("/users/:id", (req, res) => {
+  console.log("삭제 param:", req.params);
+  const { id } = req.params;
+  const numId = Number(id);
+  const userExists = users.includes(numId);
+
+  if (userExists) {
+    return res.send({
+      "message": "사용자가 삭제되었습니다."
+    })
+  }
   res.send({
-    goods: [
-      {
-        "goodsId": 1,
-        "goodName": "상품 1",
-        "category": "drink",
-        "price": 1000
-      },
-    ]
+    "error": "해당 사용자를 찾을 수 없습니다."
+  })
+})
+
+
+app.get("/posts", (req, res) => {
+  res.send(posts);
+})
+
+
+app.get("/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const numId = Number(id);
+
+  const post = posts.find(p => p.id === numId);
+
+  if (!post) {
+    return res.status(404).send({ error: "게시글을 찾을 수 없습니다." });
+  }
+
+  res.send(post);
+});
+
+
+app.get("/users/:id/posts", (req, res) => {
+  const { id } = req.params;
+  const numId = Number(id);
+  const userExists = users.includes(numId);
+
+  if (!userExists) {
+    return res.status(404).send({ error: "해당 사용자를 찾을 수 없습니다." });
+  }
+
+  const userPosts = posts.filter(post => post.userId === numId);
+  res.send(userPosts);
+});
+
+
+app.post("/posts", (req, res) => {
+  const { userId, title, content } = req.body;
+
+  const newPost = {
+    id: posts.length + 1,
+    userId,
+    title,
+    content,
+    createdAt: new Date().toISOString()
+  };
+
+  posts.push(newPost);
+
+  res.send({
+    post: newPost
   });
 });
 
 
-app.post("/api/todos", (req, res) => {
-  res.send({
-goods: [{
-"goodsId": 1,
-"goodName": "상품 1",
-"category": "drink",
-"price": 1000
-},
-{
-  "goodsId": 2,
-  "goodName": "상품 2",
-  "category": "drink",
-  "price": 3000
-},
-]});
-});
+app.put("/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, content } = req.body;
+  const numId = Number(id);
 
+  const post = posts.find(p => p.id === numId);
 
-app.get("/api/goods/:id", (req, res) => {
+  if (!post) {
+    return res.status(404).send({ error: "해당 게시글을 찾을 수 없습니다." });
+  }
+
+  if (title) post.title = title;
+  if (content) post.content = content;
+
   res.send({
-    goods: [{
-      "goodsId": 1,
-      "goodName": "상품 1",
-      "category": "drink",
-      "price": 1000
-    },
-    {
-      "goodsId": 2,
-      "goodName": "상품 2",
-      "category": "drink",
-      "price": 5000
-    },
-    ]
+    post,
   });
 });
 
+app.delete("/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const numId = Number(id);
 
-app.put("/api/goods/:id", (req, res) => {
-  res.render({
-    goods: [{
-      "goodsId": 1,
-      "goodName": "상품 1",
-      "category": "drink",
-      "price": 1000
-    },
-    {
-      "goodsId": 2,
-      "goodName": "상품 2",
-      "category": "drink",
-      "price": 5000
-    },
-  ]
-});
-});
+  const postIndex = posts.findIndex(p => p.id === numId);
 
-
-app.delete("/api/goods/:id", (req, res) => {
-  res.render({
-    goods: [{
-      "goodsId": 1,
-      "goodName": "상품 1",
-      "category": "drink",
-      "price": 1000
-    }
-    ]
-  });
+  if (postIndex === -1) {
+    res.send({ error: "해당 게시글을 찾을 수 없습니다." });
+  } else {
+    posts.splice(postIndex, 1);
+    res.send({ message: "게시글이 성공적으로 삭제되었습니다." });
+  }
 });
 
 
