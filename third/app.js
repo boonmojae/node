@@ -38,7 +38,11 @@ const posts = [
 
 
 app.get("/users", (req, res) => {
-  res.send(users);
+  const tempRes = [];
+  users.forEach((element) => {
+    tempRes.push({ id: element });
+  });
+  res.send(tempRes);
 });
 
 
@@ -73,17 +77,20 @@ app.delete("/users/:id", (req, res) => {
   console.log("삭제 param:", req.params);
   const { id } = req.params;
   const numId = Number(id);
-  const userExists = users.includes(numId);
+  const userIndex = users.indexOf(numId);
 
-  if (userExists) {
+  if (userIndex !== -1) {
+    users.splice(userIndex, 1);
     return res.send({
-      "message": "사용자가 삭제되었습니다."
-    })
+      message: "사용자가 삭제되었습니다."
+    });
   }
+
   res.send({
-    "error": "해당 사용자를 찾을 수 없습니다."
-  })
-})
+    error: "해당 사용자를 찾을 수 없습니다."
+  });
+});
+
 
 
 app.get("/posts", (req, res) => {
