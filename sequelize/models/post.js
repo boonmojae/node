@@ -1,0 +1,31 @@
+const { DataTypes } = require('sequelize');
+
+module.exports = (sequelize) => {
+   const Post = sequelize.define('Post', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+     title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  }, {
+    tableName: 'posts', // 실제 데이터베이스 테이블 이름
+    timestamps: true, // createdAt, updatedAt 자동 생성
+    underscored: true, // 컬럼명을 snake_case로 자동 변환 (e.g., firstName -> first_name)
+  });
+  
+Post.associate = (models) => {
+  Post.belongsTo(models.User, {
+    foreignKey: 'user_id',
+    as: 'User',
+  });
+}
+  return Post;
+}
